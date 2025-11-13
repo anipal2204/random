@@ -134,6 +134,9 @@
   <audio id="sndVoice" src="voice.mp3" preload="auto"></audio>
   <audio id="sndRain"  src="rain.mp3"  preload="auto" loop></audio>
 
+  <!-- ADDED: mp.mp3 (will play only once when the 9th no-message shows) -->
+  <audio id="sndMp" src="mp.mp3" preload="auto"></audio>
+
   <script>
     const userName = localStorage.getItem('userName') || 'friend';
     document.getElementById('question').textContent = `Hey ${userName}, do you like this cute chick? 🐥`;
@@ -209,6 +212,10 @@
     const sndVoice = document.getElementById('sndVoice');
     const sndRain  = document.getElementById('sndRain');
 
+    // ADDED: mp audio element and a flag to ensure it plays only once
+    const sndMp = document.getElementById('sndMp');
+    let mpPlayed = false;
+
     const noMessages = [
       "Are you sure? 😳","Really really sure? 🥺","But look at that tiny beak! 🐣",
       "What if it chirps just for you? 🎶","Okay… maybe think again? 🤔",
@@ -239,6 +246,13 @@
         try{ sndRain.volume = 0.4; sndRain.play().catch(()=>{}); }catch(_){}
         try{ sndVoice.currentTime = 0; sndVoice.play().catch(()=>{}); }catch(_){}
         playRain(520);
+
+        // PLAY mp.mp3 ONCE when the final (9th) message is shown
+        if(!mpPlayed){
+          try { sndMp.currentTime = 0; sndMp.play().catch(()=>{}); } catch(_){}
+          mpPlayed = true;
+        }
+
         sndVoice.addEventListener('ended', ()=> document.body.addEventListener('click', resetOnce, { once:true }), { once:true });
       }
       noIndex = Math.min(noIndex + 1, noMessages.length - 1);
