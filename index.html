@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cutieee-Patootiee</title>
+  <meta name="description" content="A playful webpage with a cute chick emoji, speech bubble, and a fun cursor." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🐥</text></svg>">
+  <style>
+    :root { --card:#ffffff; --ink:#222; --accent:#8b5cf6; --bubble:#e9f5ff; --shadow:0 20px 60px rgba(0,0,0,.12), 0 8px 20px rgba(0,0,0,.06); }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      background:url(exp1.jpeg) center/cover no-repeat fixed;
+      color:var(--ink);
+      font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+      display:grid;place-items:center;position:relative;overflow:hidden;
+      cursor:url("data:image/svg+xml;utf8,\
+        <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'>\
+          <circle cx='12' cy='12' r='10' fill='none' stroke='%238b5cf6' stroke-width='2'/>\
+          <circle cx='12' cy='12' r='3' fill='%238b5cf6'/>\
+        </svg>") 12 12, pointer;
+    }
+    body::before{content:"";position:fixed;inset:0;background:rgba(255,255,255,.35);backdrop-filter:blur(2px);z-index:-1}
+
+    .wrap{width:min(680px,92vw);background:var(--card);border-radius:28px;box-shadow:var(--shadow);padding:28px;text-align:center;overflow:hidden}
+    .header{font-size:24px;font-weight:700;margin-bottom:16px}
+
+    .name-section input{padding:10px 14px;border-radius:12px;border:2px solid var(--accent);outline:none;font-size:16px;width:70%}
+    .name-section button{margin-top:10px;background:linear-gradient(180deg,var(--accent),#6d28d9);color:#fff;border:0;border-radius:12px;padding:10px 16px;font-weight:600;cursor:inherit;transition:transform .2s}
+    .name-section button:active{transform:scale(.97)}
+
+    /* terminal overlay */
+    .terminal{position:fixed;inset:0;background:#000;color:#e5e5e5;display:none;grid-template-rows:1fr;place-items:start stretch;padding:8vh 6vw;z-index:999;
+      font:clamp(16px,2.6vw,26px)/1.5 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.02em}
+    .terminal .screen{max-width:1000px;margin:0 auto;width:100%}
+    .line{white-space:pre-wrap}
+    .caret::after{content:"_";animation:blink 1s step-end infinite}
+    @keyframes blink{50%{opacity:0}}
+  </style>
+</head>
+<body>
+  <main class="wrap" id="wrap">
+    <div class="header">Cutieee-Patootiee 🐥</div>
+
+    <!-- Name input -->
+    <div class="name-section" id="nameSection">
+      <p>What’s your name?</p>
+      <input type="text" id="userName" placeholder="Enter your name..." />
+      <br/>
+      <button id="continueBtn">Continue</button>
+    </div>
+  </main>
+
+  <!-- Terminal overlay -->
+  <div class="terminal" id="terminal">
+    <div class="screen" id="termBody"></div>
+  </div>
+
+  <script>
+    const continueBtn = document.getElementById('continueBtn');
+    const nameInput   = document.getElementById('userName');
+    const nameSection = document.getElementById('nameSection');
+    const term        = document.getElementById('terminal');
+    const termBody    = document.getElementById('termBody');
+
+    // allow Enter key to continue
+    nameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleContinue();
+    });
+    continueBtn.addEventListener('click', handleContinue);
+
+    function handleContinue(){
+      const name = (nameInput.value || '').trim();
+      if (!name) { alert('Please enter your name first!'); return; }
+      localStorage.setItem('userName', name);
+      nameSection.style.display = 'none';
+      startTerminal(name);
+    }
+
+    /* terminal typing sequence */
+    function startTerminal(name){
+      term.style.display = 'grid';
+
+      const LINES = [
+        `> ${name}`,
+        `...`,
+        `> since the normal way didn't work.`,
+        ``,
+        `> so i made you this computer program`,
+        `.`,
+        `٩(◕‿◕)۶  ٩(◕‿◕)۶  ٩(◕‿◕)۶`
+      ];
+
+      const speed = 32;           // ms per character
+      const gapBetweenLines = 420;
+      let idx = 0;
+
+      function typeLine(text, done){
+        const line = document.createElement('div');
+        line.className = 'line';
+        const span = document.createElement('span');
+        const caret = document.createElement('span'); caret.className = 'caret';
+        line.append(span, caret);
+        termBody.appendChild(line);
+
+        let i = 0;
+        const timer = setInterval(() => {
+          if (i < text.length) {
+            span.textContent += text.charAt(i++);
+          } else {
+            clearInterval(timer);
+            setTimeout(done, gapBetweenLines);
+          }
+        }, speed);
+      }
+
+      function next(){
+        if (idx >= LINES.length) {
+          setTimeout(() => { window.location.href = 'question.html'; }, 700);
+          return;
+        }
+        typeLine(LINES[idx++], next);
+      }
+      next();
+    }
+  </script>
+</body>
+</html>
